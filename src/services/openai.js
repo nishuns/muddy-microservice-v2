@@ -1,12 +1,14 @@
 // src/services/openai.js
-import * as OpenAI from 'openai';
+import OpenAI from 'openai';
 import { v4 as uuidv4 } from 'uuid';
 import dotenv from 'dotenv';
 
-dotenv.config();
+// Load environment variables
+const envFile = process.env.NODE_ENV === 'production' ? '.env.production' : '.env.development';
+dotenv.config({ path: envFile });
 
-const openai = new OpenAI.OpenAI({
-  apiKey: process.env.OPENAI_KEY,
+const openai = new OpenAI({
+	apiKey: process.env.OPENAI_KEY,
 });
 
 // UPLOAD FILE:
@@ -32,13 +34,17 @@ export const createVectorStore = async (vectorConfig) => {
 
 // Create thread
 export const createThread = async (threadConfig) => {
-  const threadConf = threadConfig || {};
-
+  try {
+    const threadConf = threadConfig || {};
+    console.log(openai.beta)
   const thread = await openai.beta.threads.create({
     ...threadConf,
   });
 
   return thread;
+  } catch (error) {
+    console.log('error', error);
+  }
 };
 
 // Update vector store ID to thread

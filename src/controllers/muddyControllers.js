@@ -7,10 +7,10 @@ import {
 
 export const createThreadController = async (req, res) => {
   try {
-    const threadConfig = req.body;
-    const thread = await createThread(threadConfig);
+    const thread = await createThread();
     res.status(200).json(thread);
   } catch (error) {
+    console.log('xvf', error);
     res.status(500).json({ error: error.message });
   }
 };
@@ -27,7 +27,12 @@ export const addInstructionController = async (req, res) => {
 
 export const streamController = async (req, res) => {
   try {
-    const { threadId, assistantId } = req.body;
+    const { threadId, prompt } = req.body;
+
+    if (prompt) {
+      await createMessage(threadId, prompt);
+    }
+    const assistantId = process.env.ASSISTANT_ID;
 
     const getOutputText = (text) => {
       res.write(text);

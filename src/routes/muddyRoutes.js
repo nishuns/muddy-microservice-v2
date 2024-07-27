@@ -8,7 +8,7 @@ import {
 
 const router = Router();
 
-router.post('/create-thread', createThreadController);
+router.get('/create-thread', createThreadController);
 router.post('/add-instruction', addInstructionController);
 router.post('/stream', streamController);
 
