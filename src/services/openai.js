@@ -2,6 +2,7 @@
 import OpenAI from 'openai';
 import { v4 as uuidv4 } from 'uuid';
 import dotenv from 'dotenv';
+import fs from 'fs';
 
 // Load environment variables
 const envFile = process.env.NODE_ENV === 'production' ? '.env.production' : '.env.development';
@@ -117,6 +118,7 @@ const graphAssistant = async () => {
   console.log(myAssistant);
 };
 
+// createMessage()
 export const createMessage = async (threadId, userPrompt) => {
   try {
     console.log('xvf', threadId, userPrompt);
@@ -145,4 +147,32 @@ export const createRunUsingThreadAndAssistantIdStream = async (threadId, assista
       throw new Error(err.message);
     });
   return run;
+};
+
+// createTranslation
+export const createTranslation = async (filePath) => {
+  try {
+    const transcription = await openai.audio.transcriptions.create({
+      file: fs.createReadStream(filePath),
+      model: "whisper-1",
+    });
+    
+    return transcription;
+  } catch (error) {
+    console.error('xvf', 'error', error);
+  }
+}
+
+// tts
+export const createTTSStream = async (input, voice = 'alloy') => {
+  try {
+    const response = await openai.audio.speech.create({
+      model: 'tts-1',
+      voice,
+      input,
+    });
+    return response.body;
+  } catch (error) {
+    throw new Error(`Error creating TTS stream: ${error.message}`);
+  }
 };
